@@ -73,15 +73,15 @@ def query_bbl(borough, block, lot):
                 'state': party_record['state'],
                 'zip': party_record['zip']
             }
-        
-    print primary_party
 
     if primary_party is None:
         print "No name found!"
         return None
     else:
         print "Primary party is ", primary_party['name']
-
+    
+    print primary_party
+    
     #FINISH STEP 2
 
     print "STEP 3:"
