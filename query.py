@@ -51,7 +51,7 @@ def query_bbl(borough, block, lot):
     if latest_unique_key is None:
         print "Nothing found!"
         return None
-    elif latest_unique_key[0:3] == "BK_" or latest_unique_key[0:3] == "FT_":
+    elif str(latest_unique_key)[0:3] == "BK_" or str(latest_unique_key)[0:3] == "FT_":
         print "Latest UK is", latest_unique_key
         print "We're not interested in this type of property!"
         return None
