@@ -49,10 +49,12 @@ def query_bbl(borough, block, lot):
                 latest_doc_date = datetime.strptime(master_record['doc_date'], '%Y-%m-%d')
 
     if latest_unique_key is None:
-        sys.exit("Nothing found!")
+        print "Nothing found!"
+        return None
     elif latest_unique_key[0:3] == "BK_" or latest_unique_key[0:3] == "FT_":
         print "Latest UK is", latest_unique_key
-        sys.exit("We're not interested in this type of property!")
+        print "We're not interested in this type of property!"
+        return None
     else:
         print "Latest UK is", latest_unique_key
 
@@ -75,7 +77,8 @@ def query_bbl(borough, block, lot):
     print primary_party
 
     if primary_party is None:
-        sys.exit("No name found!")
+        print "No name found!"
+        return None
     else:
         print "Primary party is ", primary_party['name']
 
@@ -134,7 +137,8 @@ def query_bbl(borough, block, lot):
     print "Found", len(hpd_records), "records in hpd..."
     #Get the first one
     if len(hpd_records) == 0:
-        sys.exit("No HPD records!")
+        print "No HPD records!"
+        return None
 
     hpd_record = hpd_records[0]
     hpd_reg_id = hpd_record['RegistrationID']
@@ -223,5 +227,6 @@ Enable this part to disable lots lookup
 '''
 #lots = list(int(sys.argv[3]))
 
-for lot in lots:
+for idx, lot in enumerate(lots):
+    print "Running", idx, "of", len(lots), "..."
     query_bbl(borough, block, lot)
