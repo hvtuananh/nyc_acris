@@ -63,6 +63,7 @@ def query_bbl(borough, block, lot):
     print "STEP 2:"
     party_records = list(db.party_records.find({'key':latest_unique_key}))
     print "Found", len(party_records), "records in party_records..."
+    primary_party = None
     for party_record in party_records:
         if party_record['party_type'] == 2:
             primary_party = {
