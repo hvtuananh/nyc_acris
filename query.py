@@ -219,6 +219,7 @@ except:
 This part is used to get all lots associated with a borough and block
 '''
 bbl_records = list(db.lot_records.find({'borough':borough,'block':block}, {'lot':1}))
+print "Found", len(bbl_records), "BBL in this area..."
 lots = set()
 for bbl_record in bbl_records:
     lots.add(bbl_record['lot'])
