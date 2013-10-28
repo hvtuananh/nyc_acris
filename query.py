@@ -229,6 +229,6 @@ Enable this part to disable lots lookup
 '''
 #lots = list(int(sys.argv[3]))
 
-for idx, lot in enumerate(lots):
+for idx, lot in enumerate(sorted(lots)):
     print "Running", idx, "of", len(lots), "..."
     query_bbl(borough, block, lot)
