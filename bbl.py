@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from datetime import datetime
+from owner import Owner
 
 class BBLQuery:
     def __init__(self, host, port):
@@ -79,14 +80,14 @@ class BBLQuery:
         primary_party = None
         for party_record in party_records:
             if party_record['party_type'] == 2:
-                primary_party = {
+                primary_party = Owner({
                     'name': self.normalize_str(party_record['name']),
                     'addr1': self.normalize_str(party_record['addr1']),
                     'addr2': self.normalize_str(party_record['addr2']),
                     'city': party_record['city'],
                     'state': party_record['state'],
                     'zip': party_record['zip']
-                }
+                })
 
         if primary_party is None:
             print "No name found!"
@@ -115,18 +116,18 @@ class BBLQuery:
         print "STEP 4:"
         party_records = list(self.db.party_records.find({'key':{'$in': secondary_unique_keys}}))
         print "Found", len(party_records), "records in party_records..."
-        secondary_parties = list()
+        secondary_parties = set()
         for party_record in party_records:
             if party_record['party_type'] == 1:
-                secondary_party = {
+                secondary_party = Owner({
                     'name': self.normalize_str(party_record['name']),
                     'addr1': self.normalize_str(party_record['addr1']),
                     'addr2': self.normalize_str(party_record['addr2']),
                     'city': party_record['city'],
                     'state': party_record['state'],
                     'zip': party_record['zip']
-                }
-                secondary_parties.append(secondary_party)
+                })
+                secondary_parties.add(secondary_party)
         
         print "Found", len(secondary_parties), "secondary parties..."
         for secondary_party in secondary_parties:
@@ -162,9 +163,9 @@ class BBLQuery:
         print "STEP 7: HPD Contacts"
         hpd_contact_records = list(self.db.hpd_contact.find({'RegistrationID': hpd_reg_id}))
         print "Found", len(hpd_contact_records), "records in hpd_contacts..."
-        hpd_parties = list()
+        hpd_parties = set()
         for hpd_contact_record in hpd_contact_records:
-            hpd_party = {
+            hpd_party = Owner({
                 'name': hpd_contact_record['LastName'] + ', ' + hpd_contact_record['FirstName'],
                 'addr1': str(hpd_contact_record['BusinessHouseNumber']) + ' ' + hpd_contact_record['BusinessStreetName'],
                 'addr2': hpd_contact_record['BusinessApartment'],
@@ -173,8 +174,8 @@ class BBLQuery:
                 'zip': hpd_contact_record['BusinessZip'],
                 'description': hpd_contact_record['ContactDescription'],
                 'corporation_name': hpd_contact_record['CorporationName']
-            }
-            hpd_parties.append(hpd_party)
+            })
+            hpd_parties.add(hpd_party)
     
         print hpd_parties
         #Extract information
@@ -185,17 +186,17 @@ class BBLQuery:
         tax_records = list(self.db.dof_taxes.find({'ws-out-id-boro':borough, 'ws-out-id-block':block, 'ws-out-id-lot':lot}))
         print "Found", len(tax_records), "records in DOF tax bills..."
         #Extract information
-        tax_parties = list()
+        tax_parties = set()
         for tax_record in tax_records:
-            tax_party = {
+            tax_party = Owner({
                 'name': tax_record['ws-out-nm-recipient-1'] + ' ' + tax_record['ws-out-nm-recipient-2'] + ' ' + tax_record['ws-out-ad-name-attention'],
                 'addr1': str(tax_record['ws-out-ad-street-no']) + ' ' + tax_record['ws-out-ad-street-1'],
                 'addr2': tax_record['ws-out-ad-street-2'],
                 'city': tax_record['ws-out-ad-city'],
                 'state': tax_record['ws-out-cd-addr-state'],
                 'zip': tax_record['ws-out-cd-addr-zip']
-            }
-            tax_parties.append(tax_party)
+            })
+            tax_parties.add(tax_party)
 
         print tax_parties
 
