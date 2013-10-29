@@ -141,9 +141,13 @@ class BBLQuery:
         lot_records = list(self.db.lot_records.find({'key':{'$in': secondary_unique_keys}}))
         print "Found", len(lot_records), "records in lot_records..."
         print "These are secondary BBLs:"
+        cache_bbls = list([bbl])
         for lot_record in lot_records:
             if borough != lot_record['borough'] or block != lot_record['block'] or lot != lot_record['lot']:
-                print lot_record['borough'], lot_record['block'], lot_record['lot']
+                secondary_bbl = long(lot_record['borough']*1000000000+lot_record['block']*10000+lot_record['lot'])
+                if secondary_bbl not in cache_bbls:
+                    cache_bbls.append(secondary_bbl)
+                    print lot_record['borough'], lot_record['block'], lot_record['lot']
         
         #FINISH STEP 5
 

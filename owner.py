@@ -4,7 +4,7 @@ class Owner:
         
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
-            and self.transform().__dict__ == other.transform().__dict__)
+            and self.transform() == other.transform())
         
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -17,6 +17,9 @@ class Owner:
         
     def __str__(self):
         return str(self.item)
+        
+    def __hash__(self):
+        return hash(self.item['name']) ^ hash(self.item['addr1']) ^ hash(self.item['addr2']) ^ hash(self.item['city']) ^ hash(self.item['state']) ^ hash(self.item['zip'])
         
     def transform(self):
         item = {
