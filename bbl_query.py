@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from datetime import datetime
 from owner import Owner
+from bbl import BBL
 
 class BBLQuery:
     def __init__(self, host, port):
@@ -10,10 +11,13 @@ class BBLQuery:
     def normalize_str(self, string):
         return string.replace('|', ',')
         
-    def query_lots(self, borough, block):
+    def query_lots(self, bbl):
         '''
         This part is used to get all lots associated with a borough and block
         '''
+        borough = bbl.borough
+        block = bbl.block
+        
         bbl_records = list(self.db.lot_records.find({'borough':borough,'block':block}, {'lot':1}))
         print "Found", len(bbl_records), "BBL in this area..."
         lots = set()
@@ -26,11 +30,15 @@ class BBLQuery:
         Each owner is a record of name and address
         '''
         
-    def query_bbl(self, borough, block, lot):
+    def query_bbl(self, bbl):
         #bbl = borough (from args) + block (from args) + lot (either from args or db)
+        
+        borough = bbl.borough
+        block = bbl.block
+        lot = bbl.lot
     
         print "BBL:", borough, block, lot
-        bbl = long(borough*1000000000+block*10000+lot)
+        bbl_repr = long(borough*1000000000+block*10000+lot)
 
         # Each BBL has only 1 record
         '''
@@ -152,7 +160,7 @@ class BBLQuery:
         #FINISH STEP 5
 
         print "STEP 6: HPD"
-        hpd_records = list(self.db.hpd.find({'bbl':bbl}))
+        hpd_records = list(self.db.hpd.find({'bbl':bbl_repr}))
         print "Found", len(hpd_records), "records in hpd..."
         #Get the first one
         if len(hpd_records) == 0:

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+from bbl import BBL
 from bbl_query import BBLQuery
 
 try:
@@ -19,4 +20,4 @@ lots = list([lot])
 
 for idx, lot in enumerate(sorted(lots)):
     print "Running", idx, "of", len(lots), "..."
-    bbl_query.query_bbl(borough, block, lot)
+    bbl_query.query_bbl(BBL(borough, block, lot))

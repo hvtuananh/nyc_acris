@@ -1,5 +1,5 @@
 class BBL:
-    def __init(self, borough, block, lot):
+    def __init__(self, borough, block, lot):
         self.borough = borough
         self.block = block
         self.lot = lot
@@ -7,13 +7,13 @@ class BBL:
         
     def __eq__(self, other):
         return (isinstance(other, self.__class__)
-            and self.bbl = other.bbl)
+            and self.bbl == other.bbl)
         
     def __ne__(self, other):
         return not self.__eq__(other)
         
     def __getitem__(self, name):
-        return self[name]
+        return self.__dict__[name]
         
     def __repr__(self):
         return str(self)
