@@ -25,6 +25,16 @@ class BBLQuery:
             lots.add(bbl_record['lot'])
         return lots
         
+    def get_bbls(self, bbl):
+        '''
+        This part will construct ALL bbls for a given borough and block
+        '''
+        lots = self.query_lots(bbl)
+        bbls = set()
+        for lot in lots:
+            bbls.add(BBL(bbl.borough, bbl.block, lot))
+        return bbls
+        
     def match_owner(self, owner1, owner2):
         '''
         Each owner is a record of name and address
@@ -36,9 +46,10 @@ class BBLQuery:
         borough = bbl.borough
         block = bbl.block
         lot = bbl.lot
-    
+        bbl_repr = bbl.bbl_repr
+        
         print "BBL:", borough, block, lot
-        bbl_repr = long(borough*1000000000+block*10000+lot)
+        
 
         # Each BBL has only 1 record
         '''

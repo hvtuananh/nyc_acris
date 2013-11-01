@@ -15,9 +15,9 @@ except:
     
 #Another example: 1 1654 27
 
-bbl_query = BBLQuery('localhost', 40000)
+bblquery = BBLQuery('localhost', 40000)
 lots = list([lot])
 
 for idx, lot in enumerate(sorted(lots)):
     print "Running", idx, "of", len(lots), "..."
-    bbl_query.query_bbl(BBL(borough, block, lot))
+    bblquery.query_bbl(BBL(borough, block, lot))
