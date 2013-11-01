@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-from bbl import BBLQuery
+from bbl_query import BBLQuery
 
 try:
     borough = int(sys.argv[1])
