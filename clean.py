@@ -39,10 +39,10 @@ sys	0m0.072s
 
 #STEP2: How to remove BBL properly in PLUTO?
 #First, get all BBLs according to the query:
-fbbl = open('bbls.txt', 'w')
-fkey = open('keys.txt', 'w')
+fbbl = open('bbls.txt', 'a')
+fkey = open('keys.txt', 'a')
 
-bbls = db.pluto.find({'$or':[{'UnitsRes':{'$lte':3}},{'BldgClass':'C6'},{'BldgClass':'C8'},{'BldgClass':'D0'},{'BldgClass':'D4'},{'BldgClass':{'$regex':'^R'}}]}, {'BBL':1,'BoroCode':1,'Block':1,'Lot':1})
+bbls = list(db.pluto.find({'$or':[{'UnitsRes':{'$lte':3}},{'BldgClass':'C6'},{'BldgClass':'C8'},{'BldgClass':'D0'},{'BldgClass':'D4'},{'BldgClass':{'$regex':'^R'}}]}, {'BBL':1,'BoroCode':1,'Block':1,'Lot':1}))
 for bbl in bbls:
     fbbl.write(str(bbl['BBL']) + '\n')
     fbbl.flush()
