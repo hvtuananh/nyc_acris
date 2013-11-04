@@ -36,6 +36,13 @@ class BBLQuery:
             bbls.add(BBL(bbl.borough, bbl.block, lot))
         return bbls
         
+    def get_blocks(self, borough):
+        block_records = list(self.db.lot_records.find({'Borough':borough}, {'Block':1}))
+        blocks = set()
+        for block_record in block_records:
+            blocks.add(block_record['Block'])
+        return blocks
+        
     def match_owner(self, owner1, owner2):
         '''
         Each owner is a record of name and address
@@ -201,18 +208,18 @@ class BBLQuery:
         #FINISH STEP 7
 
         print "=== STEP 8: DOF Tax Bills ==="
-        tax_records = list(self.db.dof_taxes.find({'ws-out-id-boro':borough, 'ws-out-id-block':block, 'ws-out-id-lot':lot}))
+        tax_records = list(self.db.dof_taxes.find({'id-boro':borough, 'id-block':block, 'id-lot':lot}))
         print "Found", len(tax_records), "records in DOF tax bills..."
         #Extract information
         tax_parties = set()
         for tax_record in tax_records:
             tax_party = Owner({
-                'name': tax_record['ws-out-nm-recipient-1'] + ' ' + tax_record['ws-out-nm-recipient-2'] + ' ' + tax_record['ws-out-ad-name-attention'],
-                'addr1': str(tax_record['ws-out-ad-street-no']) + ' ' + tax_record['ws-out-ad-street-1'],
-                'addr2': tax_record['ws-out-ad-street-2'],
-                'city': tax_record['ws-out-ad-city'],
-                'state': tax_record['ws-out-cd-addr-state'],
-                'zip': tax_record['ws-out-cd-addr-zip']
+                'name': tax_record['nm-recipient-1'] + ' ' + tax_record['nm-recipient-2'] + ' ' + tax_record['ad-name-attention'],
+                'addr1': str(tax_record['ad-street-no']) + ' ' + tax_record['ad-street-1'],
+                'addr2': tax_record['ad-street-2'],
+                'city': tax_record['ad-city'],
+                'state': tax_record['cd-addr-state'],
+                'zip': tax_record['cd-addr-zip']
             })
             tax_parties.add(tax_party)
 
