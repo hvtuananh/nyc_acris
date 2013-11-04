@@ -24,7 +24,8 @@ for row in reader:
     if bbl not in bbls_keep:
         continue
     
-    if row[header.index('Unique_Key')] != '':
+    key = row[header.index('Unique_Key')]
+    if key != '' and key[0:3] != 'FT_' and key[0:3] != 'BK_':
         unique_keys.add(long(row[header.index('Unique_Key')]))
         
     writer.writerow(row)
