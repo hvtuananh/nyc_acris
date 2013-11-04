@@ -5,7 +5,7 @@ from bbl import BBL
 
 class BBLQuery:
     def __init__(self, host, port):
-        client = MongoClient('localhost', 40000)
+        client = MongoClient(host, port)
         self.db = client.furman
         
     def normalize_str(self, string):
@@ -18,11 +18,11 @@ class BBLQuery:
         borough = bbl.borough
         block = bbl.block
         
-        bbl_records = list(self.db.lot_records.find({'borough':borough,'block':block}, {'lot':1}))
+        bbl_records = list(self.db.lot_records.find({'Borough':borough,'Block':block}, {'Lot':1}))
         print "Found", len(bbl_records), "BBL in this area..."
         lots = set()
         for bbl_record in bbl_records:
-            lots.add(bbl_record['lot'])
+            lots.add(bbl_record['Lot'])
         return lots
         
     def get_bbls(self, bbl):
@@ -58,7 +58,7 @@ class BBLQuery:
             print lot_record
         '''
         print "STEP 1:"
-        lot_records = list(self.db.lot_records.find({'borough':borough,'block':block,'lot':lot}))
+        lot_records = list(self.db.lot_records.find({'Borough':borough,'Block':block,'Lot':lot}))
         print "Found", len(lot_records), "records in lot_records..."
         # We should get all keys here, just in case
         '''
@@ -67,19 +67,19 @@ class BBLQuery:
         '''
         unique_keys = list()
         for lot_record in lot_records:
-            unique_keys.append(lot_record['key'])
+            unique_keys.append(lot_record['Unique_Key'])
 
-        master_records = list(self.db.master_records.find({'key':{'$in':unique_keys}}))
+        master_records = list(self.db.master_records.find({'Unique_Key':{'$in':unique_keys}}))
         print "Found", len(master_records), "records in master_records..."
         latest_unique_key = None
         latest_doc_date = datetime.strptime('1970-01-01', '%Y-%m-%d')
         for master_record in master_records:
-            if master_record['doc_date'] == "":
+            if master_record['Document_Date'] == "":
                 continue
-            if master_record['doc_type'][0:4] == 'DEED':
-                if datetime.strptime(master_record['doc_date'], '%Y-%m-%d') > latest_doc_date:
-                    latest_unique_key = master_record['key']
-                    latest_doc_date = datetime.strptime(master_record['doc_date'], '%Y-%m-%d')
+            if master_record['Doc_type'][0:4] == 'DEED':
+                if datetime.strptime(master_record['Document_Date'], '%Y-%m-%d') > latest_doc_date:
+                    latest_unique_key = master_record['Unique_Key']
+                    latest_doc_date = datetime.strptime(master_record['Document_Date'], '%Y-%m-%d')
 
         if latest_unique_key is None:
             print "Nothing found!"
@@ -94,18 +94,18 @@ class BBLQuery:
         #FINISH STEP 1
 
         print "STEP 2:"
-        party_records = list(self.db.party_records.find({'key':latest_unique_key}))
+        party_records = list(self.db.party_records.find({'Unique_Key':latest_unique_key}))
         print "Found", len(party_records), "records in party_records..."
         primary_party = None
         for party_record in party_records:
-            if party_record['party_type'] == 2:
+            if party_record['Party_type'] == 2:
                 primary_party = Owner({
-                    'name': self.normalize_str(party_record['name']),
-                    'addr1': self.normalize_str(party_record['addr1']),
-                    'addr2': self.normalize_str(party_record['addr2']),
-                    'city': party_record['city'],
-                    'state': party_record['state'],
-                    'zip': party_record['zip']
+                    'name': self.normalize_str(party_record['Name']),
+                    'addr1': self.normalize_str(party_record['Addr1']),
+                    'addr2': self.normalize_str(party_record['Addr2']),
+                    'city': party_record['City'],
+                    'state': party_record['State'],
+                    'zip': party_record['Zip']
                 })
 
         if primary_party is None:
@@ -121,30 +121,31 @@ class BBLQuery:
         print "STEP 3:"
         secondary_unique_keys = list()
         for master_record in master_records:
-            if master_record['doc_date'] == "":
+            if master_record['Document_Date'] == "":
                 continue
-            if datetime.strptime(master_record['doc_date'], '%Y-%m-%d') < latest_doc_date:
+            if datetime.strptime(master_record['Document_Date'], '%Y-%m-%d') < latest_doc_date:
                 continue
-            if master_record['doc_type'][0:4] == 'MTGE' or master_record['doc_type'][0:4] == 'AGMT':
-                secondary_unique_keys.append(master_record['key'])
+            #if master_record['doc_type'][0:4] == 'MTGE' or master_record['doc_type'][0:4] == 'AGMT':
+            if master_record['Doc_type'][0:4] == 'MTGE': #Not consider AGMT right now
+                secondary_unique_keys.append(master_record['Unique_Key'])
         
         print "Found", len(secondary_unique_keys), "secondary UKs: ", secondary_unique_keys
 
         #FINISH STEP 3
 
         print "STEP 4:"
-        party_records = list(self.db.party_records.find({'key':{'$in': secondary_unique_keys}}))
+        party_records = list(self.db.party_records.find({'Unique_Key':{'$in': secondary_unique_keys}}))
         print "Found", len(party_records), "records in party_records..."
         secondary_parties = set()
         for party_record in party_records:
-            if party_record['party_type'] == 1:
+            if party_record['Party_type'] == 1:
                 secondary_party = Owner({
-                    'name': self.normalize_str(party_record['name']),
-                    'addr1': self.normalize_str(party_record['addr1']),
-                    'addr2': self.normalize_str(party_record['addr2']),
-                    'city': party_record['city'],
-                    'state': party_record['state'],
-                    'zip': party_record['zip']
+                    'name': self.normalize_str(party_record['Name']),
+                    'addr1': self.normalize_str(party_record['Addr1']),
+                    'addr2': self.normalize_str(party_record['Addr2']),
+                    'city': party_record['City'],
+                    'state': party_record['State'],
+                    'zip': party_record['Zip']
                 })
                 secondary_parties.add(secondary_party)
         
@@ -157,16 +158,16 @@ class BBLQuery:
         #FINISH STEP 4
 
         print "STEP 5:"
-        lot_records = list(self.db.lot_records.find({'key':{'$in': secondary_unique_keys}}))
+        lot_records = list(self.db.lot_records.find({'Unique_key':{'$in': secondary_unique_keys}}))
         print "Found", len(lot_records), "records in lot_records..."
         print "These are secondary BBLs:"
         cache_bbls = list([bbl])
         for lot_record in lot_records:
-            if borough != lot_record['borough'] or block != lot_record['block'] or lot != lot_record['lot']:
-                secondary_bbl = long(lot_record['borough']*1000000000+lot_record['block']*10000+lot_record['lot'])
+            if borough != lot_record['Borough'] or block != lot_record['Block'] or lot != lot_record['Lot']:
+                secondary_bbl = long(lot_record['Borough']*1000000000+lot_record['Block']*10000+lot_record['Lot'])
                 if secondary_bbl not in cache_bbls:
                     cache_bbls.append(secondary_bbl)
-                    print lot_record['borough'], lot_record['block'], lot_record['lot']
+                    print lot_record['Borough'], lot_record['Block'], lot_record['Lot']
         
         #FINISH STEP 5
 
