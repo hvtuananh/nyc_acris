@@ -62,6 +62,8 @@ for bbl in bbls:
         fkey.write(str(key) + '\n')
     fkey.flush()
     
+    unique_keys = list(unique_keys)
+    
     #Drop data in ACRIS:
     db.lot_records.remove({'key':{'$in': unique_keys}})
     db.master_records.remove({'key':{'$in': unique_keys}})
