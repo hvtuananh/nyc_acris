@@ -51,14 +51,9 @@ class BBLQuery:
         #This is the output
         building = Building(bbl)
         
-        print "STEP 1:"
+        print "=== STEP 1: ==="
         lot_records = list(self.db.lot_records.find({'Borough':borough,'Block':block,'Lot':lot}))
         print "Found", len(lot_records), "records in lot_records..."
-        # We should get all keys here, just in case
-        '''
-        lot_record = lot_records[0]
-        unique_key = lot_record['key']
-        '''
         unique_keys = list()
         for lot_record in lot_records:
             unique_keys.append(lot_record['Unique_Key'])
@@ -87,7 +82,7 @@ class BBLQuery:
 
         #FINISH STEP 1
 
-        print "STEP 2:"
+        print "=== STEP 2: ==="
         party_records = list(self.db.party_records.find({'Unique_Key':latest_unique_key}))
         print "Found", len(party_records), "records in party_records..."
         primary_party = None
@@ -107,12 +102,11 @@ class BBLQuery:
             return None
         else:
             print "Primary party is ", primary_party['name']
-    
         print primary_party
     
         #FINISH STEP 2
 
-        print "STEP 3:"
+        print "=== STEP 3: ==="
         secondary_unique_keys = list()
         for master_record in master_records:
             if master_record['Document_Date'] == "":
@@ -127,7 +121,7 @@ class BBLQuery:
 
         #FINISH STEP 3
 
-        print "STEP 4:"
+        print "=== STEP 4: ==="
         party_records = list(self.db.party_records.find({'Unique_Key':{'$in': secondary_unique_keys}}))
         print "Found", len(party_records), "records in party_records..."
         secondary_parties = set()
@@ -151,7 +145,7 @@ class BBLQuery:
     
         #FINISH STEP 4
 
-        print "STEP 5:"
+        print "=== STEP 5: ==="
         lot_records = list(self.db.lot_records.find({'Unique_key':{'$in': secondary_unique_keys}}))
         print "Found", len(lot_records), "records in lot_records..."
         print "These are secondary BBLs:"
