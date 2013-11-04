@@ -19,10 +19,10 @@ class BBL:
         return self.__dict__[name]
         
     def __repr__(self):
-        return str(self)
+        return str(self.__dict__)
         
     def __str__(self):
-        return str(self)
+        return str(self.borough) + '-' + str(self.block) + '-' + str(self.lot)
         
     def __hash__(self):
         return hash(self.bbl_repr)

@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from datetime import datetime
 from owner import Owner
 from bbl import BBL
+from building import Building
 
 class BBLQuery:
     def __init__(self, host, port):
@@ -41,22 +42,15 @@ class BBLQuery:
         '''
         
     def query_bbl(self, bbl):
-        #bbl = borough (from args) + block (from args) + lot (either from args or db)
-        
         borough = bbl.borough
         block = bbl.block
         lot = bbl.lot
         bbl_repr = bbl.bbl_repr
+        print "BBL:", bbl
         
-        print "BBL:", borough, block, lot
+        #This is the output
+        building = Building(bbl)
         
-
-        # Each BBL has only 1 record
-        '''
-        lots = lot_records.find({'borough':borough,'block':block,'lot':lot})
-        for lot_record in lots:
-            print lot_record
-        '''
         print "STEP 1:"
         lot_records = list(self.db.lot_records.find({'Borough':borough,'Block':block,'Lot':lot}))
         print "Found", len(lot_records), "records in lot_records..."
