@@ -20,4 +20,5 @@ lots = list([lot])
 
 for idx, lot in enumerate(sorted(lots)):
     print "Running", idx, "of", len(lots), "..."
-    bblquery.query_bbl(BBL(borough, block, lot))
+    building = bblquery.query_bbl(BBL(borough, block, lot))
+    print building

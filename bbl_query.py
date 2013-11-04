@@ -103,6 +103,8 @@ class BBLQuery:
         else:
             print "Primary party is ", primary_party['name']
         print primary_party
+        
+        building.primary = primary_party
     
         #FINISH STEP 2
 
@@ -142,59 +144,63 @@ class BBLQuery:
             print "Name:", secondary_party['name']
     
         print secondary_parties
+        
+        building.secondary = secondary_parties
     
         #FINISH STEP 4
 
         print "=== STEP 5: ==="
         lot_records = list(self.db.lot_records.find({'Unique_key':{'$in': secondary_unique_keys}}))
         print "Found", len(lot_records), "records in lot_records..."
-        print "These are secondary BBLs:"
-        cache_bbls = list([bbl])
+        cache_bbls = set([bbl])
         for lot_record in lot_records:
-            if borough != lot_record['Borough'] or block != lot_record['Block'] or lot != lot_record['Lot']:
-                secondary_bbl = long(lot_record['Borough']*1000000000+lot_record['Block']*10000+lot_record['Lot'])
-                if secondary_bbl not in cache_bbls:
-                    cache_bbls.append(secondary_bbl)
-                    print lot_record['Borough'], lot_record['Block'], lot_record['Lot']
+            secondary_bbl = BBL(lot_record['Borough'], lot_record['Block'], lot_record['Lot'])
+            cache_bbls.add(secondary_bbl)
+            
+        secondary_bbls = cache_bbls.difference(set([bbl]))
+        print "These are secondary BBLs:"
+        for secondary_bbl in secondary_bbls:
+            print secondary_bbl
+            
+        building.linkedbbls = secondary_bbls
         
         #FINISH STEP 5
 
-        print "STEP 6: HPD"
+        print "=== STEP 6: HPD ==="
         hpd_records = list(self.db.hpd.find({'bbl':bbl_repr}))
         print "Found", len(hpd_records), "records in hpd..."
         #Get the first one
         if len(hpd_records) == 0:
             print "No HPD records!"
-            return None
+        else:
+            hpd_record = hpd_records[0]
+            hpd_reg_id = hpd_record['RegistrationID']
+            #FINISH STEP 6
 
-        hpd_record = hpd_records[0]
-        hpd_reg_id = hpd_record['RegistrationID']
-
-        #FINISH STEP 6
-
-        print "STEP 7: HPD Contacts"
-        hpd_contact_records = list(self.db.hpd_contact.find({'RegistrationID': hpd_reg_id}))
-        print "Found", len(hpd_contact_records), "records in hpd_contacts..."
-        hpd_parties = set()
-        for hpd_contact_record in hpd_contact_records:
-            hpd_party = Owner({
-                'name': hpd_contact_record['LastName'] + ', ' + hpd_contact_record['FirstName'],
-                'addr1': str(hpd_contact_record['BusinessHouseNumber']) + ' ' + hpd_contact_record['BusinessStreetName'],
-                'addr2': hpd_contact_record['BusinessApartment'],
-                'city': hpd_contact_record['BusinessCity'],
-                'state': hpd_contact_record['BusinessState'],
-                'zip': hpd_contact_record['BusinessZip'],
-                'description': hpd_contact_record['ContactDescription'],
-                'corporation_name': hpd_contact_record['CorporationName']
-            })
-            hpd_parties.add(hpd_party)
+            print "=== STEP 7: HPD Contacts ==="
+            hpd_contact_records = list(self.db.hpd_contact.find({'RegistrationID': hpd_reg_id}))
+            print "Found", len(hpd_contact_records), "records in hpd_contacts..."
+            hpd_parties = set()
+            for hpd_contact_record in hpd_contact_records:
+                hpd_party = Owner({
+                    'name': hpd_contact_record['LastName'] + ', ' + hpd_contact_record['FirstName'],
+                    'addr1': str(hpd_contact_record['BusinessHouseNumber']) + ' ' + hpd_contact_record['BusinessStreetName'],
+                    'addr2': hpd_contact_record['BusinessApartment'],
+                    'city': hpd_contact_record['BusinessCity'],
+                    'state': hpd_contact_record['BusinessState'],
+                    'zip': hpd_contact_record['BusinessZip'],
+                    'description': hpd_contact_record['ContactDescription'],
+                    'corporation_name': hpd_contact_record['CorporationName']
+                })
+                hpd_parties.add(hpd_party)
     
-        print hpd_parties
-        #Extract information
+            print hpd_parties
+            
+            building.hpd = hpd_parties
 
         #FINISH STEP 7
 
-        print "STEP 8: DOF Tax Bills"
+        print "=== STEP 8: DOF Tax Bills ==="
         tax_records = list(self.db.dof_taxes.find({'ws-out-id-boro':borough, 'ws-out-id-block':block, 'ws-out-id-lot':lot}))
         print "Found", len(tax_records), "records in DOF tax bills..."
         #Extract information
@@ -211,8 +217,12 @@ class BBLQuery:
             tax_parties.add(tax_party)
 
         print tax_parties
+        
+        building.tax = tax_parties
 
         #FINISH STEP 8
 
         print "STEP 9: DOS"
         #Need to do it fuzzily by matching name?
+        
+        return building
