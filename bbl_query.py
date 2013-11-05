@@ -10,7 +10,7 @@ class BBLQuery:
         self.db = client.furman
         
     def normalize_str(self, string):
-        return string.replace('|', ',')
+        return str(string).replace('|', ',')
         
     def query_lots(self, bbl):
         '''
@@ -190,8 +190,8 @@ class BBLQuery:
             hpd_parties = set()
             for hpd_contact_record in hpd_contact_records:
                 hpd_party = Owner({
-                    'name': hpd_contact_record['LastName'] + ', ' + hpd_contact_record['FirstName'],
-                    'addr1': str(hpd_contact_record['BusinessHouseNumber']) + ' ' + hpd_contact_record['BusinessStreetName'],
+                    'name': str(hpd_contact_record['LastName']) + ', ' + str(hpd_contact_record['FirstName']),
+                    'addr1': str(hpd_contact_record['BusinessHouseNumber']) + ' ' + str(hpd_contact_record['BusinessStreetName']),
                     'addr2': hpd_contact_record['BusinessApartment'],
                     'city': hpd_contact_record['BusinessCity'],
                     'state': hpd_contact_record['BusinessState'],
@@ -214,8 +214,8 @@ class BBLQuery:
         tax_parties = set()
         for tax_record in tax_records:
             tax_party = Owner({
-                'name': tax_record['nm-recipient-1'] + ' ' + tax_record['nm-recipient-2'] + ' ' + tax_record['ad-name-attention'],
-                'addr1': str(tax_record['ad-street-no']) + ' ' + tax_record['ad-street-1'],
+                'name': str(tax_record['nm-recipient-1']) + ' ' + str(tax_record['nm-recipient-2']) + ' ' + str(tax_record['ad-name-attention']),
+                'addr1': str(tax_record['ad-street-no']) + ' ' + str(tax_record['ad-street-1']),
                 'addr2': tax_record['ad-street-2'],
                 'city': tax_record['ad-city'],
                 'state': tax_record['cd-addr-state'],

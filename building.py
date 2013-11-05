@@ -23,3 +23,6 @@ class Building:
         
     def __str__(self):
         return str(self.__dict__)
+        
+    def __hash__(self):
+        return hash(self.bbl.bbl_repr)
