@@ -23,7 +23,14 @@ class Building:
         
     def __str__(self):
         result = 'BBL:\n\t' + str(self.bbl)
-        result += 'Primary Owner:\n\t' + str(self.primary)
+        if self.primary is not None:
+            result += '\nPrimary Owner:\n' + str(self.primary)
+        if self.secondary is not None:   
+            result += '\nSecondary Owners:\n' + '\n'.join(map(str, self.secondary))
+        if self.hpd is not None: 
+            result += '\nHPD Contacts:\n' + '\n'.join(map(str, self.hpd))
+        if self.tax is not None: 
+            result += '\nDOF Tax Information:\n' + '\n'.join(map(str, self.tax))
         return result
         
     def __hash__(self):

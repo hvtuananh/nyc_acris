@@ -19,7 +19,9 @@ class Owner:
         return str(self.item)
         
     def __str__(self):
-        return str(self.item)
+        result = '\tName:\n\t\t' + str(self['name'])
+        result += '\n\tAddress:\n\t\t' + str(self['addr1']).strip() + ', ' + str(self['addr2']).strip() + ', ' + str(self['city']) + ', ' + str(self['state']) + ', ' + str(self['zip'])
+        return result
         
     def __hash__(self):
         return hash(self.item['name']) ^ hash(self.item['addr1']) ^ hash(self.item['addr2']) ^ hash(self.item['city']) ^ hash(self.item['state']) ^ hash(self.item['zip'])
