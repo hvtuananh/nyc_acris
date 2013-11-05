@@ -22,7 +22,8 @@ class Building:
         return str(self.__dict__)
         
     def __str__(self):
-        return str(self.__dict__)
+        result = str(self.bbl)
+        return result
         
     def __hash__(self):
         return hash(self.bbl.bbl_repr)
@@ -54,7 +55,9 @@ class Building:
         self_owners = self.get_owners()
         other_owners = other.get_owners()
         
-        overal_score = 0
+        overall_score = 0
         for owner1 in self_owners:
             for owner2 in other_owners:
-                overal_score += owner1.similarity(owner2)
+                overall_score += owner1.similarity(owner2)
+                
+        return overall_score / (len(self_owners)*len(other_owners))

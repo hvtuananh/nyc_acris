@@ -1,3 +1,6 @@
+import re
+p = re.compile(r'[^0-9a-z]')
+
 class Owner:
     def __init__(self, item):
         self.item = item
@@ -31,3 +34,31 @@ class Owner:
             'zip': self.item['zip']
         }
         return item
+        
+    def similarity(self, other):
+        # Min = 0, Max = 2
+        if not isinstance(other, self.__class__):
+            return 0
+            
+        if self == other:
+            return 0
+            
+        return self.name_similarity(other) + self.addr_similarity(other)
+        
+    def name_similarity(self, other):
+        self_name = set(p.split(self['name'].lower()))
+        other_name = set(p.split(other['name'].lower()))
+        return float(len(self_name & other_name)) / len(self_name | other_name)
+        
+    def addr_similarity(self, other):
+        if str(self['state']).lower() != str(other['state']).lower():
+            return 0
+            
+        if self['zip'] != '' and other['zip'] != '':
+            if int(str(self['zip'])[0:5]) != int(str(other['zip'])[0:5]):
+                return 0
+            
+        # Now only need to consider address matching
+        self_addr = set(p.split(self['addr1'].lower()))
+        other_addr = set(p.split(other['addr1'].lower()))
+        return float(len(self_addr & other_addr)) / len(self_addr | other_addr)
