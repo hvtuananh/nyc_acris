@@ -26,3 +26,15 @@ class Building:
         
     def __hash__(self):
         return hash(self.bbl.bbl_repr)
+        
+    def similarity(other):
+        if not isinstance(other, self.__class__):
+            return 0
+        
+        # No need to match with its own    
+        if self.bbl = other.bbl:
+            return 0
+            
+        # Will need to implement bunch of address here, together with its weight.
+        # However, at this stage, every owner will have the same weight 1
+        
