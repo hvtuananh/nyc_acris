@@ -22,7 +22,8 @@ class Building:
         return str(self.__dict__)
         
     def __str__(self):
-        result = str(self.bbl)
+        result = 'BBL:\n\t' + str(self.bbl)
+        result += 'Primary Owner:\n\t' + str(self.primary)
         return result
         
     def __hash__(self):
