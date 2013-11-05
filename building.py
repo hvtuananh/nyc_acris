@@ -27,14 +27,34 @@ class Building:
     def __hash__(self):
         return hash(self.bbl.bbl_repr)
         
-    def similarity(other):
+    def get_owners(self):
+        results = set()
+        if self.primary is not None:
+            results.add(self.primary)
+        if self.secondary is not None:
+            results |= self.secondary
+        if self.hpd is not None:
+            results |= self.hpd
+        if self.tax is not None:
+            results |= self.tax
+        if self.dos is not None:
+            results |= self.dos
+        return results
+        
+    def similarity(self, other):
         if not isinstance(other, self.__class__):
             return 0
         
         # No need to match with its own    
-        if self.bbl = other.bbl:
+        if self.bbl == other.bbl:
             return 0
             
         # Will need to implement bunch of address here, together with its weight.
         # However, at this stage, every owner will have the same weight 1
+        self_owners = self.get_owners()
+        other_owners = other.get_owners()
         
+        overal_score = 0
+        for owner1 in self_owners:
+            for owner2 in other_owners:
+                overal_score += owner1.similarity(owner2)
