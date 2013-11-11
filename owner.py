@@ -50,7 +50,11 @@ class Owner:
     def name_similarity(self, other):
         self_name = set(p.split(self['name'].lower()))
         other_name = set(p.split(other['name'].lower()))
-        return float(len(self_name & other_name)) / len(self_name | other_name)
+        score = float(len(self_name & other_name)) / len(self_name | other_name)
+        if score > 0.5:
+            return score
+        else:
+            return 0 
         
     def addr_similarity(self, other):
         if str(self['state']).lower() != str(other['state']).lower():
