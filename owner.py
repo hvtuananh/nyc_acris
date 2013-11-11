@@ -55,7 +55,11 @@ class Owner:
     def name_similarity(self, other):
         self_name = set(filter(None, p.split(self['name'].lower())))
         other_name = set(filter(None, p.split(other['name'].lower())))
-        score = float(len(self_name & other_name)) / len(self_name | other_name)
+        try:
+            score = float(len(self_name & other_name)) / len(self_name | other_name)
+        except ZeroDivisionError:
+            return 0
+            
         if score > 0.5:
             return score
         else:
