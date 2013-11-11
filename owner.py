@@ -41,15 +41,20 @@ class Owner:
         # Min = 0, Max = 2
         if not isinstance(other, self.__class__):
             return 0
-            
-        if self == other:
+        
+        # Don't need to compare the same entity
+        if self is other:
             return 0
+        
+        # If they are exactly the same, then give 1        
+        if self == other:
+            return 1
             
         return self.name_similarity(other) + self.addr_similarity(other)
         
     def name_similarity(self, other):
-        self_name = set(p.split(self['name'].lower()))
-        other_name = set(p.split(other['name'].lower()))
+        self_name = set(filter(None, p.split(self['name'].lower())))
+        other_name = set(filter(None, p.split(other['name'].lower())))
         score = float(len(self_name & other_name)) / len(self_name | other_name)
         if score > 0.5:
             return score
