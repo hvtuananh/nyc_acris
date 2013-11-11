@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
-from multiprocessing import Process, Pool
+from multiprocessing import Process, Pool, Queue
 import time
+import random
 
-def f(x,y):
+def f(x):
     print x*x
-    time.sleep(10)
+    time.sleep(random.randint(1, 10))
+    return x
     
 if __name__ == '__main__':
     pool = Pool(processes=4)
-    result = pool.map(f, [(1,1),(2,2)])
+    result = pool.map(f, range(10))
+    print result
