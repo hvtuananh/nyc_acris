@@ -37,17 +37,17 @@ class Building:
         return hash(self.bbl.bbl_repr)
         
     def get_owners(self):
-        results = set()
+        results = list()
         if self.primary is not None:
-            results.add(self.primary)
+            results.append(set([self.primary]))
         if self.secondary is not None:
-            results |= self.secondary
+            results.append(self.secondary)
         if self.hpd is not None:
-            results |= self.hpd
+            results.append(self.hpd)
         if self.tax is not None:
-            results |= self.tax
+            results.append(self.tax)
         if self.dos is not None:
-            results |= self.dos
+            results.append(self.dos)
         return results
         
     def similarity(self, other):
@@ -64,8 +64,14 @@ class Building:
         other_owners = other.get_owners()
         
         overall_score = 0
-        for owner1 in self_owners:
-            for owner2 in other_owners:
-                overall_score += owner1.similarity(owner2)
+        for owners1 in self_owners:
+            for owners2 in other_owners:
+                if len(owners1) == 0 or len(owners2) == 0:
+                    continue
+                individual_scores = list()
+                for owner1 in owners1:
+                    for owner2 in owners2:
+                        individual_scores.append(owner1.similarity(owner2))
+                overall_score += max(individual_scores)
                 
         return overall_score / (len(self_owners)*len(other_owners))
