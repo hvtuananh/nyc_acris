@@ -62,8 +62,24 @@ class Owner:
             
         if score > 0.5:
             return score
-        else:
-            return 0 
+            
+        return 0 
+            
+    def get_number_from_addr2(self):
+        if self['addr2'] is None or self['addr2'] == '':
+            return None
+        
+        try:    
+            numbers = [int(s) for s in str(self['addr2']).split() if s.isdigit()]
+        except:
+            return None
+        
+        if len(numbers) == 0:
+            return None
+        return numbers[0]
+        
+    def addr_filter(self, s):
+        return s not in "st street ave avenue av place pl parkway pkwy".split()
         
     def addr_similarity(self, other):
         if str(self['state']).lower() != str(other['state']).lower():
@@ -75,6 +91,15 @@ class Owner:
                 return 0
             
         # Now only need to consider address matching
-        self_addr = set(p.split(self['addr1'].lower()))
-        other_addr = set(p.split(other['addr1'].lower()))
-        return float(len(self_addr & other_addr)) / len(self_addr | other_addr)
+        self_addr = set(filter(self.addr_filter, filter(None, p.split(self['addr1'].lower()))))
+        other_addr = set(filter(self.addr_filter, filter(None, p.split(other['addr1'].lower()))))
+        try:
+            score = float(len(self_addr & other_addr)) / len(self_addr | other_addr)
+        except ZeroDivisionError:
+            return 0
+            
+        if score > 0.5:
+            if self.get_number_from_addr2() == other.get_number_from_addr2():
+                return score
+                
+        return 0

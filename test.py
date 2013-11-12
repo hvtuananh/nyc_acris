@@ -11,5 +11,5 @@ def f(x):
     
 if __name__ == '__main__':
     pool = Pool(processes=4)
-    result = pool.map(f, range(10))
+    result = pool.map(f, range(100))
     print result
