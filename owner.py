@@ -86,8 +86,11 @@ class Owner:
             return 0
             
         if self['zip'] != '' and other['zip'] != '':
-            #if int(str(self['zip'])[0:5]) != int(str(other['zip'])[0:5]):
-            if int(str(self['zip'])[0:3]) != int(str(other['zip'])[0:3]):
+            try:
+                #if int(str(self['zip'])[0:5]) != int(str(other['zip'])[0:5]):
+                if int(str(self['zip'])[0:3]) != int(str(other['zip'])[0:3]):
+                    return 0
+            except:
                 return 0
             
         # Now only need to consider address matching
