@@ -3,8 +3,16 @@
 import pickle
 import sys
 
-data = pickle.load(open('match-scores-optimized-more-4.bin'))
-data = filter(None, data)
+data = list()
+chunk = pickle.load(open('match-scores-optimized-more-2.bin'))
+chunk = filter(None, chunk)
+data += chunk
+chunk = pickle.load(open('match-scores-optimized-more-3.bin'))
+chunk = filter(None, chunk)
+data += chunk
+chunk = pickle.load(open('match-scores-optimized-more-4.bin'))
+chunk = filter(None, chunk)
+data += chunk
 
 # 1. Construct full graph from pickle
 graph = dict()
@@ -51,9 +59,25 @@ for k,v in sorted(graph.iteritems(), key=lambda(k,v):(v,k), reverse=True):
 # 2. Convert list to set for deduplication
 # Since this case might happen:
 # a <-> b then c <-> d then a <-> c
+
+scores = dict()
+for x in results:
+    avgs = list()
+    for y in x:
+        for z in x:
+            if y < z:
+                key = (y,z)
+            else:
+                key = (z,y)
+            if key in graph:
+                avgs.append(graph[key])
+    if len(avgs) == 0:
+        scores[frozenset(x)] = 0
+    else:
+        scores[frozenset(x)] = float(sum(avgs))/len(avgs)
         
 for x in sorted(results, key=lambda s:len(s), reverse=False):
-    print "\nThis group has", len(x), "BBLs"
+    print "\nThis group has", len(x), "BBLs and average score", scores[frozenset(x)]
     for y in x:
         sys.stdout.write(str(y) + '  ')
     sys.stdout.write("\n")
