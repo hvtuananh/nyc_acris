@@ -4,6 +4,9 @@ import pickle
 import sys
 
 data = list()
+chunk = pickle.load(open('match-scores-optimized-more-1.bin'))
+chunk = filter(None, chunk)
+data += chunk
 chunk = pickle.load(open('match-scores-optimized-more-2.bin'))
 chunk = filter(None, chunk)
 data += chunk
@@ -38,7 +41,7 @@ graph = {
 
 results = list()        
 for k,v in sorted(graph.iteritems(), key=lambda(k,v):(v,k), reverse=True):
-    if v < 0.5: break
+    if v < 1: break
     done = False
     anchor_set = None
     for x in results:
