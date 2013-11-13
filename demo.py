@@ -4,6 +4,9 @@ import sys
 import json
 
 data = list()
+chunk = pickle.load(open('match-scores-optimized-more-1.bin'))
+chunk = filter(None, chunk)
+data += chunk
 chunk = pickle.load(open('match-scores-optimized-more-2.bin'))
 chunk = filter(None, chunk)
 data += chunk
@@ -23,7 +26,7 @@ for (k,v) in data:
         # Actually don't need since we already know the order of BBL
         #graph[(x,k)] = y
 
-bbls = "3-3326-34  3-3166-41  3-3294-42  3-3326-48  3-3166-52  3-3441-5  3-3247-40  3-3269-52  3-3279-43  3-3217-18  3-3186-18  3-3283-8  3-3393-43  3-3314-35  3-3187-21  3-3188-7  3-3266-40  3-3187-28  3-3266-45  3-3444-16  3-3173-3  3-3236-20  3-3301-5  3-3236-22  3-3219-47  3-3187-48  3-3384-16  3-3173-22  3-3220-40  3-3171-59  3-3220-44  3-3332-47  3-3301-32  3-3333-33  3-3269-35  3-3447-5  3-3297-51  3-3175-11  3-3175-15  3-3157-52  3-3320-9  3-3175-26  3-3174-44  3-3430-46  3-3175-32  3-3151-163  3-3287-38  3-3257-12  3-3177-13  3-3219-21  3-3209-17  3-3289-19  3-3289-21  3-3177-12  3-3220-51  3-3211-4  3-3257-43  3-3322-28  3-3188-40  3-3211-33  3-3258-50  3-3197-11  3-3291-46  3-3165-23  3-3436-18  3-3183-37  3-3309-2  3-3246-16  3-3311-4  3-3166-23  3-3326-26  3-3151-12  3-3326-29".split()
+bbls = "3-4648-33  3-5082-67  3-4898-4  3-1269-20  3-4598-1  3-1322-26  3-1418-49  3-1413-1  3-4633-1  3-5065-100  3-1388-53  3-1419-6  3-4615-41  3-1403-40  3-4668-20  3-4633-65  3-5105-43  3-1296-28  3-1425-13  3-1419-1".split()
 
 json3 = list()
 bbl_list = list()
@@ -45,9 +48,11 @@ for x in bbl_list:
     for y in bbl_list:
         if x > y: continue
         if (x,y) in graph:
+            if graph[(x,y)] < 1:
+                continue
             json2 = dict()
-            json2['source'] = str(x)
-            json2['target'] = str(y)
+            json2['source'] = bbl_list.index(x)
+            json2['target'] = bbl_list.index(y)
             json2['value'] = graph[(x,y)]
             json1.append(json2)
            
